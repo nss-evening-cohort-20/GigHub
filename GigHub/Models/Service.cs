@@ -2,9 +2,9 @@
 {
     public class Service
     {
-        public string id { get; set; }
+        public int Id { get; set; }
         
-        public string UserRoleId { get; set; }
+        public int UserRoleId { get; set; }
         
         public string ServiceDescription { get; set; }
 
