@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IUserRepository, UserRepository>(); 
 builder.Services.AddTransient<IVenueRepository, VenueRepository>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
