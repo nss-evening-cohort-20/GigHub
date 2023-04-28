@@ -10,30 +10,23 @@ namespace GigHub.Repositories
         {
         }
 
-        // 1. GetAll
-        // Create and open a connection
-        // Create your command
-        // Command text
-        // Command parameters if needed
-        // Execute SQL
-        // Handle results
 
         public List<Service> GetAllServices()
         {
-            using (var conn = Connection) // this creates the connection
+            using (var conn = Connection) 
             {
-                conn.Open(); // this opens the connection 
-                using (var cmd = conn.CreateCommand()) // this is command text
+                conn.Open(); 
+                using (var cmd = conn.CreateCommand()) 
                 {
                     cmd.CommandText = @"SELECT [id]
                                               ,[userRoleId]
                                               ,[serviceDescription]
                                               ,[serviceRate]
-                                        FROM [GigHub].[dbo].[Service]"; // this is the command
+                                        FROM [GigHub].[dbo].[Service]"; 
 
-                    using var reader = cmd.ExecuteReader(); // this executes SQL
+                    using var reader = cmd.ExecuteReader(); 
 
-                    var services = new List<Service>(); // this will hold the results
+                    var services = new List<Service>(); 
 
                     while (reader.Read())
                     {
@@ -49,26 +42,11 @@ namespace GigHub.Repositories
                     }
 
                     return services;
-                    //we do not have to include conn.Close() as we are utilized "USING VAR READER" when executing SQL
 
                 }
 
             }
 
         }
-
-
-
-
-        // 2. GetById
-        // 3. GetByName
-        // 4. Create
-        // 5. Update
-        // 6. Delete
-
-
-
-
-
     }
 }

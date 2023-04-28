@@ -21,10 +21,7 @@ namespace GigHub.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            // This method is to GetAllServices
-            // - Need to get the appropriate Repository as a private field
-            // - add repository to the constructor
-            // - 
+
 
             var services = _serviceRepository.GetAllServices();
 
