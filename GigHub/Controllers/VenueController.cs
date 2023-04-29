@@ -1,4 +1,5 @@
 ﻿using GigHub.Repositories;
+using GigHub.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -24,7 +25,7 @@ namespace GigHub.Controllers
         }
 
         // GET api/<VenueController>/5
-        [HttpGet("{id}")]
+        [HttpGet("GetVenueById")]
         public IActionResult GetById(int id)
         {
             var venue = _venueRepository.GetById(id);
@@ -35,8 +36,8 @@ namespace GigHub.Controllers
             return Ok(venue);
         }
 
-        // GET api/<VenueController>/5
-        [HttpGet("{zipcode}")]
+        // GET api/<VenueController>/37214
+        [HttpGet("GetVenueByZipcode")]
         public IActionResult GetByZipcode(int zipcode)
         {
             var venue = _venueRepository.GetByZipcode(zipcode);
@@ -49,20 +50,31 @@ namespace GigHub.Controllers
 
         // POST api/<VenueController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post(Venue venue)
         {
+            _venueRepository.Add(venue);
+            return CreatedAtAction("get", new { id = venue.Id }, venue);
         }
 
         // PUT api/<VenueController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, Venue venue)
         {
+            if (id != venue.Id)
+            {
+                return BadRequest();
+            }
+
+            _venueRepository.Update(venue);
+            return NoContent();
         }
 
         // DELETE api/<VenueController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            _venueRepository.Delete(id);
+            return NoContent();
         }
     }
 }

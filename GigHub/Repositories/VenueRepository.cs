@@ -22,7 +22,7 @@ namespace GigHub.Repositories
                                   ,v.venueDescription
                                   ,v.capacity
                                   ,v.venueRate
-                                  ,u.id AS UserId
+                                  ,vt.UserId AS UserId
                                   ,u.userName
                                   ,u.userZipcode
                                   ,u.email
@@ -32,14 +32,14 @@ namespace GigHub.Repositories
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
                              JOIN [User] u
-                               ON u.id = vt.UserId
+                               ON vt.UserId = u.id
                             ";
 
                     var reader = cmd.ExecuteReader();
 
                     var venues = new List<Venue>();
 
-                    var user = new User();
+                    var users = new List<User>();
 
                     while (reader.Read())
                     {
@@ -53,30 +53,25 @@ namespace GigHub.Repositories
                             VenueRate = DbUtils.GetInt(reader, "venueRate"),
                             Users = new List<User>()
                         };
-
+                        
                         if (DbUtils.IsNotDbNull(reader, "UserId"))
                         {
-                            var userTableId = DbUtils.GetInt(reader, "UserId");
-                            var existingUser = venue.Users.FirstOrDefault(e => e.Id == userTableId);
-
-                            if (existingUser == null)
+                            users.Add(new User()
                             {
-                                venue.Users.Add(new User()
-                                {
-                                    Id = DbUtils.GetInt(reader, "UserId"),
-                                    UserName = DbUtils.GetString(reader, "userName"),
-                                    UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
-                                    Email = DbUtils.GetString(reader, "email"),
-                                    Phone = DbUtils.GetString(reader, "phone"),
-                                    SocialMedia = DbUtils.GetString(reader, "socialMedia")
-                                });
-                            }
+                                Id = DbUtils.GetInt(reader, "UserId"),
+                                UserName = DbUtils.GetString(reader, "userName"),
+                                UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
+                                Email = DbUtils.GetString(reader, "email"),
+                                Phone = DbUtils.GetString(reader, "phone"),
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                            });
                         }
 
                         venues.Add(venue);
+                        venue.Users = users;
                     }
                     conn.Close();
-                    return venues;
+                    return venues.DistinctBy(venue => venue.Id).ToList();
                 }
             }
         }
@@ -190,6 +185,84 @@ namespace GigHub.Repositories
 
                         return venue;
                     }
+                }
+            }
+        }
+
+        public void Add(Venue venue)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Venue (venueName
+                                      ,venueZipcode
+                                      ,venueDescription
+                                      ,capacity
+                                      ,venueRate)
+                   OUTPUT INSERTED.ID
+                               VALUES (@VenueName
+                                      ,@VenueZipcode
+                                      ,@VenueDescription
+                                      ,@Capacity
+                                      ,@VenueRate)";
+
+                    DbUtils.AddParameter(cmd, "@VenueName", venue.VenueName);
+                    DbUtils.AddParameter(cmd, "@VenueZipcode", venue.VenueZipcode);
+                    DbUtils.AddParameter(cmd, "@VenueDescription", venue.VenueDescription);
+                    DbUtils.AddParameter(cmd, "@Capacity", venue.Capacity);
+                    DbUtils.AddParameter(cmd, "@VenueRate", venue.VenueRate);
+
+                    venue.Id = (int)cmd.ExecuteScalar();
+                }
+            }
+        }
+
+        public void Update(Venue venue)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                UPDATE Venue
+                                   SET venueName = @VenueName,
+                                       venueZipcode = @VenueZipcode,
+                                       venueDescription = @VenueDescription,
+                                       capacity = @Capacity,
+                                       venueRate = @VenueRate
+                                 WHERE Id = @Id";
+
+                    DbUtils.AddParameter(cmd, "@VenueName", venue.VenueName);
+                    DbUtils.AddParameter(cmd, "@VenueZipcode", venue.VenueZipcode);
+                    DbUtils.AddParameter(cmd, "@VenueDescription", venue.VenueDescription);
+                    DbUtils.AddParameter(cmd, "@Capacity", venue.Capacity);
+                    DbUtils.AddParameter(cmd, "@VenueRate", venue.VenueRate);
+                    DbUtils.AddParameter(cmd, "@Id", venue.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void Delete(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                         DELETE FROM Venue
+                           WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
