@@ -57,7 +57,7 @@ namespace GigHub.Controllers
         public IActionResult DeleteUser(int id)
         {
             var user = _userRepository.GetUserById(id);
-            if (user == null) 
+            if (user == null)
             {
                 return NotFound();
             }
