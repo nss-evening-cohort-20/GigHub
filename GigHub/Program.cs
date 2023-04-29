@@ -11,6 +11,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IEventRepository, EventRepository>();
 
+builder.Services.AddTransient<IServiceRepository, ServiceRepository>();
+builder.Services.AddTransient<IUserRepository, UserRepository>(); 
+builder.Services.AddTransient<IVenueRepository, VenueRepository>();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,3 +33,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
