@@ -31,9 +31,20 @@ namespace GigHub.Controllers
 
         // GET api/<ServicesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            // 1. get service by Id using the repo
+            // 2. check if we successfully retrieved anything
+            // 3. handle "found" and "not found"
+
+            var service = _serviceRepository.GetServiceById(id);
+            if (service == null)
+            {
+                // if not found = this is what we add what to do
+                return NotFound($"Could not found service with id {id}.");
+            }
+
+            return Ok(service);
         }
 
         // POST api/<ServicesController>
