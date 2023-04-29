@@ -2,6 +2,7 @@
 using GigHub.Models;
 using GigHub.Utils;
 using Microsoft.Data.SqlClient;
+using System.Buffers;
 
 namespace GigHub.Repositories
 {
@@ -22,7 +23,7 @@ namespace GigHub.Repositories
                                   ,v.venueDescription
                                   ,v.capacity
                                   ,v.venueRate
-                                  ,vt.UserId AS UserId
+                                  ,u.id AS UserId
                                   ,u.userName
                                   ,u.userZipcode
                                   ,u.email
@@ -32,7 +33,7 @@ namespace GigHub.Repositories
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
                              JOIN [User] u
-                               ON vt.UserId = u.id
+                               ON u.id = vt.UserId
                             ";
 
                     var reader = cmd.ExecuteReader();
@@ -56,19 +57,19 @@ namespace GigHub.Repositories
                         
                         if (DbUtils.IsNotDbNull(reader, "UserId"))
                         {
-                            users.Add(new User()
-                            {
-                                Id = DbUtils.GetInt(reader, "UserId"),
-                                UserName = DbUtils.GetString(reader, "userName"),
-                                UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
-                                Email = DbUtils.GetString(reader, "email"),
-                                Phone = DbUtils.GetString(reader, "phone"),
-                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
-                            });
+                                users.Add(new User()
+                                {
+                                    Id = DbUtils.GetInt(reader, "UserId"),
+                                    UserName = DbUtils.GetString(reader, "userName"),
+                                    UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
+                                    Email = DbUtils.GetString(reader, "email"),
+                                    Phone = DbUtils.GetString(reader, "phone"),
+                                    SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                                });
                         }
 
-                        venues.Add(venue);
                         venue.Users = users;
+                        venues.Add(venue);
                     }
                     conn.Close();
                     return venues.DistinctBy(venue => venue.Id).ToList();
@@ -102,48 +103,45 @@ namespace GigHub.Repositories
                              JOIN [User] u
                                ON u.id = vt.UserId
                             WHERE v.id = @id";
+                    
                     cmd.Parameters.AddWithValue("@id", id);
 
-                    using (var reader = cmd.ExecuteReader())
+                    var reader = cmd.ExecuteReader();
+
+                    Venue venue = null;
+                    
+                    while (reader.Read())
                     {
-                        Venue venue = null;
-                        if (reader.Read())
+                        if (venue == null)
                         {
-                            venue = new Venue()
-                            {
-                                Id = DbUtils.GetInt(reader, "VenueId"),
-                                VenueName = DbUtils.GetString(reader, "venueName"),
-                                VenueZipcode = DbUtils.GetInt(reader, "venueZipcode"),
-                                VenueDescription = DbUtils.GetString(reader, "venueDescription"),
-                                Capacity = DbUtils.GetInt(reader, "capacity"),
-                                VenueRate = DbUtils.GetInt(reader, "venueRate"),
-                                Users = new List<User>()
-                            };
-
-                            if (DbUtils.IsNotDbNull(reader, "UserId"))
-                            {
-                                var userTableId = DbUtils.GetInt(reader, "UserId");
-                                var existingUser = venue.Users.FirstOrDefault(e => e.Id == userTableId);
-
-                                if (existingUser == null)
-                                {
-                                    venue.Users.Add(new User()
-                                    {
-                                        Id = DbUtils.GetInt(reader, "UserId"),
-                                        UserName = DbUtils.GetString(reader, "userName"),
-                                        UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
-                                        Email = DbUtils.GetString(reader, "email"),
-                                        Phone = DbUtils.GetString(reader, "phone"),
-                                        SocialMedia = DbUtils.GetString(reader, "socialMedia")
-                                    });
-                                }
-                            }
-
+                             venue = new Venue
+                             {
+                                    Id = DbUtils.GetInt(reader, "VenueId"),
+                                    VenueName = DbUtils.GetString(reader, "venueName"),
+                                    VenueZipcode = DbUtils.GetInt(reader, "venueZipcode"),
+                                    VenueDescription = DbUtils.GetString(reader, "venueDescription"),
+                                    Capacity = DbUtils.GetInt(reader, "capacity"),
+                                    VenueRate = DbUtils.GetInt(reader, "venueRate"),
+                                    Users = new List<User>()
+                             };
                         }
-                        reader.Close();
 
-                        return venue;
+                        if (DbUtils.IsNotDbNull(reader, "UserId"))
+                        {
+                            venue.Users.Add(new User()
+                            {
+                                Id = DbUtils.GetInt(reader, "UserId"),
+                                UserName = DbUtils.GetString(reader, "userName"),
+                                UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
+                                Email = DbUtils.GetString(reader, "email"),
+                                Phone = DbUtils.GetString(reader, "phone"),
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                            });
+                        }
                     }
+                    reader.Close();
+                    return venue;
+
                 }
             }
         }
@@ -156,22 +154,36 @@ namespace GigHub.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                            SELECT id AS VenueId
-                                  ,venueName
-                                  ,venueZipcode
-                                  ,venueDescription
-                                  ,capacity
-                                  ,venueRate
-                             FROM Venue
+                            SELECT v.id AS VenueId
+                                  ,v.venueName
+                                  ,v.venueZipcode
+                                  ,v.venueDescription
+                                  ,v.capacity
+                                  ,v.venueRate
+                                  ,u.id AS UserId
+                                  ,u.userName
+                                  ,u.userZipcode
+                                  ,u.email
+                                  ,u.phone
+                                  ,u.socialMedia
+                             FROM Venue v
+                             JOIN VenueToUser vt
+                               ON v.id = vt.VenueId
+                             JOIN [User] u
+                               ON u.id = vt.UserId
                             WHERE venueZipcode = @venueZipcode";
+                    
                     cmd.Parameters.AddWithValue("@venueZipcode", zipcode);
 
-                    using (var reader = cmd.ExecuteReader())
+                    var reader = cmd.ExecuteReader();
+
+                    Venue venue = null;
+
+                    while (reader.Read())
                     {
-                        Venue venue = null;
-                        if (reader.Read())
+                        if (venue == null)
                         {
-                            venue = new Venue()
+                            venue = new Venue
                             {
                                 Id = DbUtils.GetInt(reader, "VenueId"),
                                 VenueName = DbUtils.GetString(reader, "venueName"),
@@ -179,12 +191,25 @@ namespace GigHub.Repositories
                                 VenueDescription = DbUtils.GetString(reader, "venueDescription"),
                                 Capacity = DbUtils.GetInt(reader, "capacity"),
                                 VenueRate = DbUtils.GetInt(reader, "venueRate"),
+                                Users = new List<User>()
                             };
                         }
-                        reader.Close();
 
-                        return venue;
+                        if (DbUtils.IsNotDbNull(reader, "UserId"))
+                        {
+                            venue.Users.Add(new User()
+                            {
+                                Id = DbUtils.GetInt(reader, "UserId"),
+                                UserName = DbUtils.GetString(reader, "userName"),
+                                UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
+                                Email = DbUtils.GetString(reader, "email"),
+                                Phone = DbUtils.GetString(reader, "phone"),
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                            });
+                        }
                     }
+                    reader.Close();
+                    return venue;
                 }
             }
         }
