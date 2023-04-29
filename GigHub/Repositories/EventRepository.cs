@@ -1,53 +1,162 @@
-﻿using Ranger_GigHub.Models;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Extensions.Hosting;
+using GigHub.Models;
+using GigHub.Utils;
 
-namespace Ranger_GigHub.Repositories
+
+
+namespace GigHub.Repositories
 {
-    public class EventRepository 
+    public class EventRepository : BaseRepository, IEventRepository
     {
-        private readonly IConfiguration _config;
-
-        public EventRepository(IConfiguration config)
-        {
-            _config = config;
-        }
-
-        public SqlConnection Connection
-        {
-            get
-            {
-                return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            }
-        }
+        public EventRepository(IConfiguration configuration) : base(configuration) { }
 
         public List<Event> GetAllEvents()
         {
-            using (SqlConnection conn = Connection)
+            using (var conn = Connection)
             {
                 conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, VenueId, Event Name, EventDate
-                    FROM Events
+                    cmd.CommandText = @"
+                    SELECT e.Id AS EventId
+                           ,e.VenueId 
+                           ,e.eventName 
+                           ,e.eventDate
+                           ,v.venueName
+                           ,v.venueZipcode
+                    FROM Event e
+                           LEFT JOIN Venue v ON e.VenueId = v.id
+                    ORDER BY v.eventDate
                     ";
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    List<Event> events = new List<Event>();
+                    var reader = cmd.ExecuteReader();
+
+                    var events = new List<Event>();
+                    
                     while (reader.Read())
                     {
-                        Event venueevent = new Event
+                        events.Add(new Event()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             VenueId = reader.GetInt32(reader.GetOrdinal("VenueId")),
-                            EventName = reader.GetString(reader.GetOrdinal("EventName")),
-                            EventDate = reader.GetDateTime(reader.GetOrdinal("EventDate")),
-                        };
-
-                        events.Add(venueevent);
+                            eventName = reader.GetString(reader.GetOrdinal("EventName")),
+                            eventDate = reader.GetDateTime(reader.GetOrdinal("EventDate")),
+                            //uncomment when Venue is added
+                            //Venue = new Venue()
+                            //{
+                            //    Name = DbUtils.GetString(reader,"Name"),
+                            //},
+                        });
                     }
                     reader.Close();
 
                     return events;
+                }
+            }
+        }
+        public Event GetById(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    SELECT e.Id AS EventId
+                           ,e.VenueId 
+                           ,e.eventName 
+                           ,e.eventDate
+                           ,v.venueName
+                           ,v.venueZipcode
+                    FROM Event e
+                           LEFT JOIN Venue v ON e.VenueId = v.id
+                    ORDER BY v.eventDate
+                    ";
+
+                    DbUtils.AddParameter(cmd, "@Id", id);
+
+                    var reader = cmd.ExecuteReader();
+
+                    Event venueevent = null;
+                    if (reader.Read())
+                    {
+                        venueevent = new Event()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            VenueId = reader.GetInt32(reader.GetOrdinal("VenueId")),
+                            eventName = reader.GetString(reader.GetOrdinal("EventName")),
+                            eventDate = reader.GetDateTime(reader.GetOrdinal("EventDate")),
+                            //uncomment when Venue is added
+                            //Venue = new Venue()
+                            //{
+                            //    Name = DbUtils.GetString(reader,"Name"),
+                            //},
+                        };
+                    }
+
+                    reader.Close();
+
+                    return venueevent;
+                }
+            }
+        }
+
+        public void Add(Event venueevent)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                     INSERT INTO Event (VenueId, eventName, eventDate)
+                     OUTPUT INSERTED.ID
+                     VALUES (@VenueId, @eventName, @eventDate)
+                    ";
+
+                    DbUtils.AddParameter(cmd, "@VenueId", venueevent.VenueId);
+                    DbUtils.AddParameter(cmd, "@eventName", venueevent.eventName);
+                    DbUtils.AddParameter(cmd, "@eventDate", venueevent.eventDate);
+
+                    venueevent.Id = (int)cmd.ExecuteScalar();
+                }
+            }
+        }
+
+        public void Update(Event venueevent)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        UPDATE Event
+                        SET VenueId = @VenueId,
+                            eventName = @eventName,
+                            eventDate = @eventDate
+                        WHERE Id = @Id
+                    ";
+                    DbUtils.AddParameter(cmd, "@VenueId", venueevent.VenueId);
+                    DbUtils.AddParameter(cmd, "@eventName", venueevent.eventName);
+                    DbUtils.AddParameter(cmd, "@eventDate", venueevent.eventDate);
+                    DbUtils.AddParameter(cmd, "@Id", venueevent.Id);
+
+                    cmd.ExecuteNonQuery();
+
+                }
+            }
+        }
+        public void Delete(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM Event WHERE Id = @Id";
+                    DbUtils.AddParameter(cmd, "@id", id);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
