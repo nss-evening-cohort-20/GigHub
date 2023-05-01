@@ -33,8 +33,7 @@ namespace GigHub.Repositories
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
                              JOIN [User] u
-                               ON u.id = vt.UserId
-                            ";
+                               ON u.id = vt.UserId";
 
                     var reader = cmd.ExecuteReader();
 
