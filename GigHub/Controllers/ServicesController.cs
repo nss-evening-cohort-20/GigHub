@@ -1,5 +1,7 @@
-﻿using GigHub.Repositories;
+﻿using GigHub.Models;
+using GigHub.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -49,8 +51,10 @@ namespace GigHub.Controllers
 
         // POST api/<ServicesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult AddNewService(Service service)
         {
+            _serviceRepository.AddNewService(service);
+            return CreatedAtAction("Get", new { id = service.Id }, service);
         }
 
         // PUT api/<ServicesController>/5
@@ -61,8 +65,11 @@ namespace GigHub.Controllers
 
         // DELETE api/<ServicesController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult DeleteService(int id)
         {
+            _serviceRepository.DeleteService(id);
+            return NoContent();
+               
         }
     }
 }

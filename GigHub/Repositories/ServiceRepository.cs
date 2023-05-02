@@ -1,6 +1,7 @@
 ﻿using GigHub.Models;
 using GigHub.Utils;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Security.Cryptography;
 
 namespace GigHub.Repositories
@@ -141,25 +142,51 @@ namespace GigHub.Repositories
 
             }
 
-
-
-
-
         }
 
 
-        //public void CreateNewService(Service service)
-        //{
+        public void AddNewService(Service service)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Service ([userRoleId]
+                                        ,[serviceDescription]
+                                        ,[serviceRate])
+                    OUTPUT INSERTED.ID 
+                    VALUES              (@userRoleId
+                                        ,@serviceDescription
+                                        ,@serviceRate)"
+                    ;
 
-        //    how to create a POST
-        // 1.create and open a connection
-        // 2.create a command
-        // 3.provide SQL
-        // 4.provide parameters
-        // 5.execute SQL
-        // 6.Optional = return something to indicate success
+                    DbUtils.AddParameter(cmd, "@userRoleId", service.UserRoleId);
+                    DbUtils.AddParameter(cmd, "@serviceDescription", service.ServiceDescription);
+                    DbUtils.AddParameter(cmd, "@serviceRate", service.ServiceRate);
+                    
+                    service.Id = (int)cmd.ExecuteScalar();
+                }
+            }
+        }
 
-        //}
+        public void DeleteService(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM Service WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
 
 
 
