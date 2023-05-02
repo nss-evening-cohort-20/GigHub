@@ -281,8 +281,10 @@ namespace GigHub.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                         DELETE FROM Venue
-                           WHERE Id = @id";
+                         DELETE FROM VenueToUser
+                               WHERE VenueId = @id
+                              DELETE FROM Venue
+                               WHERE id = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);
 
