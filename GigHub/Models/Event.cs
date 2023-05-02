@@ -10,8 +10,7 @@
 
         public DateTime eventDate { get; set; }
 
-        //Used to get the venueName, uncomment when venue is pulled
-        //public Venue Venue { get; set; }
+        public Venue Venue { get; set; }
     }
 }
 
