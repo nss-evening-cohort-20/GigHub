@@ -29,14 +29,12 @@ namespace GigHub.Repositories
                                   ,u.email
                                   ,u.phone
                                   ,u.socialMedia
-                                  ,vt.VenueId AS VTVenueId
-                                  ,vt.UserId AS VTUserId
+                                  ,u.UserRoleId
                              FROM Venue v
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
                              JOIN [User] u
-                               ON u.id = vt.UserId
-                            ";
+                               ON u.id = vt.UserId";
 
                     var reader = cmd.ExecuteReader();
 
@@ -64,7 +62,7 @@ namespace GigHub.Repositories
                                 Users = new List<User>()
                             };
                         }
-                                
+
                         venue.Users.Add(new User()
                         {
                             Id = DbUtils.GetInt(reader, "UserId"),
@@ -72,7 +70,8 @@ namespace GigHub.Repositories
                             UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
                             Email = DbUtils.GetString(reader, "email"),
                             Phone = DbUtils.GetString(reader, "phone"),
-                            SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                            SocialMedia = DbUtils.GetString(reader, "socialMedia"),
+                            UserRoleId = DbUtils.GetInt(reader, "UserRoleId")
                         });
                     }
 
@@ -107,6 +106,7 @@ namespace GigHub.Repositories
                                   ,u.email
                                   ,u.phone
                                   ,u.socialMedia
+                                  ,u.UserRoleId
                              FROM Venue v
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
@@ -145,7 +145,8 @@ namespace GigHub.Repositories
                                 UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
                                 Email = DbUtils.GetString(reader, "email"),
                                 Phone = DbUtils.GetString(reader, "phone"),
-                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia"),
+                                UserRoleId = DbUtils.GetInt(reader, "UserRoleId")
                             });
                         }
                     }
@@ -176,6 +177,7 @@ namespace GigHub.Repositories
                                   ,u.email
                                   ,u.phone
                                   ,u.socialMedia
+                                  ,u.UserRoleId
                              FROM Venue v
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
@@ -214,7 +216,8 @@ namespace GigHub.Repositories
                                 UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
                                 Email = DbUtils.GetString(reader, "email"),
                                 Phone = DbUtils.GetString(reader, "phone"),
-                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia"),
+                                UserRoleId = DbUtils.GetInt(reader, "UserRoleId")
                             });
                         }
                     }
@@ -292,8 +295,10 @@ namespace GigHub.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
+                         DELETE FROM VenueToUser
+                               WHERE VenueId = @id
                          DELETE FROM Venue
-                           WHERE Id = @id";
+                               WHERE id = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);
 
