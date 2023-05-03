@@ -29,6 +29,7 @@ namespace GigHub.Repositories
                                   ,u.email
                                   ,u.phone
                                   ,u.socialMedia
+                                  ,u.UserRoleId
                              FROM Venue v
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
@@ -39,39 +40,48 @@ namespace GigHub.Repositories
 
                     var venues = new List<Venue>();
 
-                    var users = new List<User>();
+                    Venue? venue = null;
 
                     while (reader.Read())
                     {
-                        var venue = new Venue()
+                        if (venue == null || venue.Id != DbUtils.GetInt(reader, "VenueId"))
                         {
-                            Id = DbUtils.GetInt(reader, "VenueId"),
-                            VenueName = DbUtils.GetString(reader, "venueName"),
-                            VenueZipcode = DbUtils.GetInt(reader, "venueZipcode"),
-                            VenueDescription = DbUtils.GetString(reader, "venueDescription"),
-                            Capacity = DbUtils.GetInt(reader, "capacity"),
-                            VenueRate = DbUtils.GetInt(reader, "venueRate"),
-                            Users = new List<User>()
-                        };
-                        
-                        if (DbUtils.IsNotDbNull(reader, "UserId"))
-                        {
-                                users.Add(new User()
-                                {
-                                    Id = DbUtils.GetInt(reader, "UserId"),
-                                    UserName = DbUtils.GetString(reader, "userName"),
-                                    UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
-                                    Email = DbUtils.GetString(reader, "email"),
-                                    Phone = DbUtils.GetString(reader, "phone"),
-                                    SocialMedia = DbUtils.GetString(reader, "socialMedia")
-                                });
+                            if (venue != null)
+                            {
+                                venues.Add(venue);
+                            }
+
+                            venue = new Venue()
+                            {
+                                Id = DbUtils.GetInt(reader, "VenueId"),
+                                VenueName = DbUtils.GetString(reader, "venueName"),
+                                VenueZipcode = DbUtils.GetInt(reader, "venueZipcode"),
+                                VenueDescription = DbUtils.GetString(reader, "venueDescription"),
+                                Capacity = DbUtils.GetInt(reader, "capacity"),
+                                VenueRate = DbUtils.GetInt(reader, "venueRate"),
+                                Users = new List<User>()
+                            };
                         }
 
-                        venue.Users = users;
+                        venue.Users.Add(new User()
+                        {
+                            Id = DbUtils.GetInt(reader, "UserId"),
+                            UserName = DbUtils.GetString(reader, "userName"),
+                            UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
+                            Email = DbUtils.GetString(reader, "email"),
+                            Phone = DbUtils.GetString(reader, "phone"),
+                            SocialMedia = DbUtils.GetString(reader, "socialMedia"),
+                            UserRoleId = DbUtils.GetInt(reader, "UserRoleId")
+                        });
+                    }
+
+                    if (venue != null)
+                    {
                         venues.Add(venue);
                     }
+
                     conn.Close();
-                    return venues.DistinctBy(venue => venue.Id).ToList();
+                    return venues;
                 }
             }
         }
@@ -96,6 +106,7 @@ namespace GigHub.Repositories
                                   ,u.email
                                   ,u.phone
                                   ,u.socialMedia
+                                  ,u.UserRoleId
                              FROM Venue v
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
@@ -134,7 +145,8 @@ namespace GigHub.Repositories
                                 UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
                                 Email = DbUtils.GetString(reader, "email"),
                                 Phone = DbUtils.GetString(reader, "phone"),
-                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia"),
+                                UserRoleId = DbUtils.GetInt(reader, "UserRoleId")
                             });
                         }
                     }
@@ -165,6 +177,7 @@ namespace GigHub.Repositories
                                   ,u.email
                                   ,u.phone
                                   ,u.socialMedia
+                                  ,u.UserRoleId
                              FROM Venue v
                              JOIN VenueToUser vt
                                ON v.id = vt.VenueId
@@ -203,7 +216,8 @@ namespace GigHub.Repositories
                                 UserZipcode = DbUtils.GetInt(reader, "userZipcode"),
                                 Email = DbUtils.GetString(reader, "email"),
                                 Phone = DbUtils.GetString(reader, "phone"),
-                                SocialMedia = DbUtils.GetString(reader, "socialMedia")
+                                SocialMedia = DbUtils.GetString(reader, "socialMedia"),
+                                UserRoleId = DbUtils.GetInt(reader, "UserRoleId")
                             });
                         }
                     }
@@ -283,7 +297,7 @@ namespace GigHub.Repositories
                     cmd.CommandText = @"
                          DELETE FROM VenueToUser
                                WHERE VenueId = @id
-                              DELETE FROM Venue
+                         DELETE FROM Venue
                                WHERE id = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);
