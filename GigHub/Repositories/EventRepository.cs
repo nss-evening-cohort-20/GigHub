@@ -26,7 +26,7 @@ namespace GigHub.Repositories
                            ,v.venueZipcode
                     FROM Event e
                            LEFT JOIN Venue v ON e.VenueId = v.id
-                    ORDER BY v.eventDate
+                    ORDER BY eventDate
                     ";
 
                     var reader = cmd.ExecuteReader();
@@ -37,15 +37,14 @@ namespace GigHub.Repositories
                     {
                         events.Add(new Event()
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("EventId")),
                             VenueId = reader.GetInt32(reader.GetOrdinal("VenueId")),
-                            eventName = reader.GetString(reader.GetOrdinal("EventName")),
-                            eventDate = reader.GetDateTime(reader.GetOrdinal("EventDate")),
-                            //uncomment when Venue is added
-                            //Venue = new Venue()
-                            //{
-                            //    Name = DbUtils.GetString(reader,"Name"),
-                            //},
+                            eventName = reader.GetString(reader.GetOrdinal("eventName")),
+                            eventDate = reader.GetDateTime(reader.GetOrdinal("eventDate")),
+                            Venue = new Venue()
+                            {
+                                VenueName = DbUtils.GetString(reader, "venueName"),
+                            }
                         });
                     }
                     reader.Close();
@@ -70,7 +69,7 @@ namespace GigHub.Repositories
                            ,v.venueZipcode
                     FROM Event e
                            LEFT JOIN Venue v ON e.VenueId = v.id
-                    ORDER BY v.eventDate
+                    ORDER BY eventDate
                     ";
 
                     DbUtils.AddParameter(cmd, "@Id", id);
@@ -82,15 +81,14 @@ namespace GigHub.Repositories
                     {
                         venueevent = new Event()
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("EventId")),
                             VenueId = reader.GetInt32(reader.GetOrdinal("VenueId")),
-                            eventName = reader.GetString(reader.GetOrdinal("EventName")),
-                            eventDate = reader.GetDateTime(reader.GetOrdinal("EventDate")),
-                            //uncomment when Venue is added
-                            //Venue = new Venue()
-                            //{
-                            //    Name = DbUtils.GetString(reader,"Name"),
-                            //},
+                            eventName = reader.GetString(reader.GetOrdinal("eventName")),
+                            eventDate = reader.GetDateTime(reader.GetOrdinal("eventDate")),
+                            Venue = new Venue()
+                            {
+                                VenueName = DbUtils.GetString(reader, "venueName"),
+                            },
                         };
                     }
 
@@ -137,6 +135,7 @@ namespace GigHub.Repositories
                             eventDate = @eventDate
                         WHERE Id = @Id
                     ";
+
                     DbUtils.AddParameter(cmd, "@VenueId", venueevent.VenueId);
                     DbUtils.AddParameter(cmd, "@eventName", venueevent.eventName);
                     DbUtils.AddParameter(cmd, "@eventDate", venueevent.eventDate);
@@ -155,7 +154,9 @@ namespace GigHub.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "DELETE FROM Event WHERE Id = @Id";
+
                     DbUtils.AddParameter(cmd, "@id", id);
+
                     cmd.ExecuteNonQuery();
                 }
             }
