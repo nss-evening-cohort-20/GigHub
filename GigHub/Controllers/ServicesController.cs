@@ -59,9 +59,21 @@ namespace GigHub.Controllers
 
         // PUT api/<ServicesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
+
+        public IActionResult Update(int id, Service service)
         {
+            if (id != service.Id)
+            {
+                return BadRequest();
+            }
+
+            _serviceRepository.Update(service);
+            return NoContent();
         }
+
 
         // DELETE api/<ServicesController>/5
         [HttpDelete("{id}")]

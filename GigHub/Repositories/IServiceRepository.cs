@@ -8,5 +8,6 @@ namespace GigHub.Repositories
         void DeleteService(int id);
         List<Service> GetAllServices();
         Service? GetServiceById(int id);
+        void Update(Service service);
     }
 }

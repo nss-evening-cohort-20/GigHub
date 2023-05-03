@@ -171,6 +171,38 @@ namespace GigHub.Repositories
             }
         }
 
+        // GET PUT = TO UPDATE
+
+        public void Update(Service service)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                        UPDATE Service
+                                           SET [userRoleId] = @UserRoleId
+                                              ,[serviceDescription] = @ServiceDescription
+                                              ,[serviceRate] = @ServiceRate
+                                         WHERE [id] = @Id";
+
+                    DbUtils.AddParameter(cmd, "@Id", service.Id);
+                    DbUtils.AddParameter(cmd, "@UserRoleId", service.UserRoleId);
+                    DbUtils.AddParameter(cmd, "@ServiceDescription", service.ServiceDescription);
+                    DbUtils.AddParameter(cmd, "@ServiceRate", service.ServiceRate);
+
+                    //cmd.Parameters.AddWithValue("@Id", service.Id);
+                    //cmd.Parameters.AddWithValue("@UserRoleId", service.UserRoleId);
+                    //cmd.Parameters.AddWithValue("@ServiceDescription", service.ServiceDescription);
+                    //cmd.Parameters.AddWithValue("@UserRoleId", service.ServiceRate);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
         public void DeleteService(int id)
         {
             using (var conn = Connection)
