@@ -6,24 +6,24 @@ export const EventProvider = (props) => {
   const [events, setEvents] = useState([]);
 
   const getAllEvents = () => {
-    return fetch("/api/events")
+    return fetch("/api/event")
       .then((res) => res.json())
       .then(setEvents);
   };
 
   const addEvent = (event) => {
-    return fetch("/api/events", {
+    return fetch("/api/event", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(post),
+      body: JSON.stringify(event),
     });
   };
 
   return (
-    <PostContext.Provider value={{ posts, getAllPosts, addPost }}>
+    <EventContext.Provider value={{ events, getAllEvents, addEvent }}>
       {props.children}
-    </PostContext.Provider>
+    </EventContext.Provider>
   );
 };
