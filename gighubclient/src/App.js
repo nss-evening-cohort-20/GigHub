@@ -14,7 +14,7 @@ function App() {
         <VenueProvider>
           <VenueList />
         </VenueProvider>
-      </div>
+        </div>
     </div>
   );
 }
