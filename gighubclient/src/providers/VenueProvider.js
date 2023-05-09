@@ -6,13 +6,13 @@ export const VenueProvider = (props) => {
   const [venues, setVenues] = useState([]);
 
   const getAllVenues = () => {
-    return fetch("/api/Venue")
+    return fetch("/venue")
       .then((res) => res.json())
       .then(setVenues);
   };
 
   const addVenue = (venue) => {
-    return fetch("/api/Venue", {
+    return fetch("/venue", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
