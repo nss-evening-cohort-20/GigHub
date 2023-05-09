@@ -1,5 +1,6 @@
 {
   "name": "gighubclient",
+  "proxy": "https://localhost:7154",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
