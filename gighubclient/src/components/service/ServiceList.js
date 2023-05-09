@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { ServiceContext } from "../providers/ServiceProvider";
+import { ServiceContext } from "../../providers/ServiceProvider";
 
 const ServiceList = () => {
   const { service, getAllServices } = useContext(ServiceContext);
