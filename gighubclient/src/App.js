@@ -1,8 +1,8 @@
 import logo from "./components/images/GigHub_logo.jpg";
 import "./App.css";
 import React from "react";
-import { VenueProvider } from "./providers/VenueProvider";
-import VenueList from "./components/venue/VenueList";
+import { EventProvider } from "./providers/EventProvider";
+import EventList from "./components/event/EventList";
 
 function App() {
   return (
@@ -12,9 +12,9 @@ function App() {
         <h1 className="App-title">GigHub</h1>
       </header>
       <div>
-        <VenueProvider>
-          <VenueList />
-        </VenueProvider>
+        <EventProvider>
+          <EventList />
+        </EventProvider>
         </div>
     </div>
   );

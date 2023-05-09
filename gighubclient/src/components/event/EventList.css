@@ -1,7 +1,7 @@
 :root {
     --card-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.6);
 }
-.venue-list {
+.event-list {
     background: #D9D9D9;
     box-shadow: var(--card-shadow);
     border-radius: 8px;
@@ -19,42 +19,27 @@
     margin: 20px;
 }
 
-.venue-container {
+.event-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
 }
 
-.venue-card {
+.event-card {
     background: #F5F5F5;
     border-radius: 5px;
     box-shadow: var(--card-shadow);
     font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
     margin: 20px;
     padding: 10px;
-    max-width: 300px;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-evenly;
 }
 
-.venue-description {
-    margin: 15px;
-    font-style: italic;
-}
-.venue-detail-item {
-    margin: 0;
-    padding: 0;
-}
-
-.contact-info-container {
-    border: solid black;
-    margin: 10px;
-    padding: 10px 0;
-}
-
-.contact-info-title {
-    font-weight: bold;
-}
-
-.contact-info-item {
-    font-size: 13px;
-    margin: 2px;
+.event-detail-item {
+    flex-direction: row;
+    margin: 20px;
 }
