@@ -4,8 +4,7 @@ import { EventProvider } from "./providers/EventProvider";
 import EventList from "./components/EventList";
 import { EventForm } from "./components/events/EventForm";
 import logo from "./components/images/GigHub_logo.jpg";
-import { VenueProvider } from "./providers/VenueProvider";
-import VenueList from "./components/VenueList";
+
 
 function App() {
   return (
