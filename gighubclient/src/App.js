@@ -1,8 +1,7 @@
-import logo from "./components/images/GigHub_logo.jpg";
-import "./App.css";
-import React from "react";
-import { EventProvider } from "./providers/EventProvider";
-import EventList from "./components/event/EventList";
+import logo from './components/images/GigHub_logo.jpg';
+import './App.css';
+import { ServiceProvider } from './providers/ServiceProvider';
+import ServiceList from './components/service/ServiceList';
 
 function App() {
   return (
@@ -12,10 +11,10 @@ function App() {
         <h1 className="App-title">GigHub</h1>
       </header>
       <div>
-        <EventProvider>
-          <EventList />
-        </EventProvider>
-        </div>
+        <ServiceProvider>
+          <ServiceList />
+        </ServiceProvider>
+      </div>
     </div>
   );
 }
