@@ -1,22 +1,19 @@
-import React from "react";
-import "./App.css";
-import { EventProvider } from "./providers/EventProvider";
-import EventList from "./components/EventList";
-import { EventForm } from "./components/events/EventForm";
-import logo from "./components/images/GigHub_logo.jpg";
-
+import logo from './components/images/GigHub_logo.jpg';
+import './App.css';
+import { ServiceProvider } from './providers/ServiceProvider';
+import ServiceList from './components/service/ServiceList';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        <h1 className="App-title">GigHub</h1>
       </header>
       <div>
-        <EventProvider>
-          <EventForm />
-          <EventList />
-        </EventProvider>
+        <ServiceProvider>
+          <ServiceList />
+        </ServiceProvider>
       </div>
     </div>
   );

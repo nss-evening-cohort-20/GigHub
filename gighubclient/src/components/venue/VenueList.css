@@ -1,0 +1,60 @@
+:root {
+    --card-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.6);
+}
+.venue-list {
+    background: #D9D9D9;
+    box-shadow: var(--card-shadow);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin: 20px;
+}
+
+.page-title {
+    font-family: 'Jockey One';
+    font-style: normal;
+    font-size: 60px;
+    text-align: center;
+    margin: 20px;
+}
+
+.venue-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.venue-card {
+    background: #F5F5F5;
+    border-radius: 5px;
+    box-shadow: var(--card-shadow);
+    font-family: 'Inter', sans-serif;
+    margin: 20px;
+    padding: 10px;
+    max-width: 300px;
+}
+
+.venue-description {
+    margin: 15px;
+    font-style: italic;
+}
+.venue-detail-item {
+    margin: 0;
+    padding: 0;
+}
+
+.contact-info-container {
+    border: solid black;
+    margin: 10px;
+    padding: 10px 0;
+}
+
+.contact-info-title {
+    font-weight: bold;
+}
+
+.contact-info-item {
+    font-size: 13px;
+    margin: 2px;
+}
