@@ -6,7 +6,7 @@ export const ServiceProvider = (props) => {
   const [service, setService] = useState([]);
 
   const getAllServices = () => {
-    return fetch("/api/services")
+    return fetch("/services")
       .then((res) => res.json())
       .then(setService);
   };
