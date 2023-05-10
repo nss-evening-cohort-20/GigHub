@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { VenueContext } from "../../providers/VenueProvider";
 import "./VenueList.css";
 
-const VenueList = () => {
+export const VenueList = () => {
   const { venues, getAllVenues } = useContext(VenueContext);
 
 
