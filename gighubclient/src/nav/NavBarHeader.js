@@ -1,4 +1,4 @@
-import { Nav, Navbar, NavDropdown, Container } from "react-bootstrap";
+import { Nav, Navbar, Container } from "react-bootstrap";
 import logo from "../components/images/GigHub_logo.jpg";
 
 export const NavBarHeader = () => {
