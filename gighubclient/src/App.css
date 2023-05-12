@@ -3,7 +3,7 @@
 }
 
 
-.App-header {
+/* .App-header {
   background-color: #22194D;
   min-height: 33vh;
   display: flex;
@@ -14,11 +14,29 @@
   color: white;
   padding: 15px 15px 15px 80px;
   
-}
+} */
 
 .App-logo {
   height: 20vmin;
   pointer-events: none;
+}
+
+.color-nav {
+  background-color: #22194D;
+}
+
+a.App-title.navbar-brand {
+  color: white;
+  font-size: calc(90px + 2vmin);
+}
+
+a.nav-link {
+  color: white;
+}
+
+.App-title {
+color: white;
+font-size: large;
 }
 
 /* @media (prefers-reduced-motion: no-preference) {

@@ -4,12 +4,19 @@ export const VenueContext = React.createContext();
 
 export const VenueProvider = (props) => {
   const [venues, setVenues] = useState([]);
+  const [venue, setVenue] = useState([]);
 
   const getAllVenues = () => {
     return fetch("/venue")
       .then((res) => res.json())
       .then(setVenues);
   };
+
+  const getVenueById = (id) => {
+    return fetch("/venue/${id}")
+      .then((res) => res.json())
+      .then(setVenue);
+  }
 
   const addVenue = (venue) => {
     return fetch("/venue", {
@@ -22,7 +29,7 @@ export const VenueProvider = (props) => {
   };
 
   return (
-    <VenueContext.Provider value={{ venues, getAllVenues, addVenue }}>
+    <VenueContext.Provider value={{ venue, venues, getAllVenues, getVenueById, addVenue }}>
       {props.children}
     </VenueContext.Provider>
   );

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { VenueContext } from "../../providers/VenueProvider";
 import "./VenueList.css";
 
@@ -17,7 +18,7 @@ const VenueList = () => {
           {venues.map((venue) => (
             <div key={venue.id}>
               <div className="venue-card">
-                <h3>{venue.venueName}</h3>
+                <h3 className="venue-name">{venue.venueName}</h3>
                 <div className="venue-description">{venue.venueDescription}</div>
                     <div className="venue-details">
                         <p className="venue-detail-item">Zip Code: {venue.venueZipcode}</p>
@@ -41,6 +42,9 @@ const VenueList = () => {
             </div>
           ))}
         </div>
+        <Link to={`/addVenue`} className="addVenue">
+            <button className="addVenueButton">Add New Venue</button>
+        </Link>
     </div>
 )};
 
