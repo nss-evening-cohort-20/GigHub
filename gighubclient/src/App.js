@@ -1,22 +1,21 @@
-import logo from './components/images/GigHub_logo.jpg';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 import './App.css';
-import { VenueProvider } from './providers/VenueProvider';
-import VenueList from './components/venue/VenueList';
+import { NavBarHeader } from "./nav/NavBarHeader";
+import { ApplicationViews } from "./components/views/ApplicationViews";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">GigHub</h1>
-      </header>
-      <div>
-        <VenueProvider>
-          <VenueList />
-        </VenueProvider>
-      </div>
-    </div>
-  );
+  return <Routes>
+    <Route 
+      path="*"
+      element={
+        <>
+          <NavBarHeader />
+          <ApplicationViews />
+        </>
+      }
+      />
+  </Routes>
 }
 
 export default App;
